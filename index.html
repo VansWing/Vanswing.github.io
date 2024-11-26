@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Warning and Real-Time Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 400px 400px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .clock {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .warning {
+            font-size: 24px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="clock" id="clock"></div>
+        <div class="warning" id="warning">Loading weather warnings...</div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        async function fetchWeatherWarnings() {
+            try {
+                const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en');
+                const data = await response.json();
+                const value = data.updateTime
+                document.getElementById('warning').innerHTML = value;
+            } catch (error) {
+                console.error('Error fetching weather warnings:', error);
+                document.getElementById('warning').textContent = 'Failed to load weather warnings.';
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        setInterval(fetchWeatherWarnings(),1000)
+        updateClock(); // initial call to display clock immediately
+        fetchWeatherWarnings();
+    </script>
+</body>
+</html>
